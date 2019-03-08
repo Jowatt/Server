@@ -44,7 +44,7 @@ public class User implements Serializable {
 	private UserStatus status;
 
 	@Column(nullable = false)
-	private Date creationDate;
+	private String creationDate;
 
 	@Column(nullable = true)
 	private Date birthDay;
@@ -93,9 +93,9 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {this.password = password;}
 
-	public void setCreationDate(Date creationDate) {this.creationDate = creationDate;}
+	public void setCreationDate(String creationDate) {this.creationDate = creationDate;}
 
-	public Date getCreationDate() {return creationDate; }
+	public String getCreationDate() {return creationDate; }
 
 	public Date getBirthDay(){ return birthDay; }
 

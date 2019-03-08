@@ -60,15 +60,15 @@ public class UserService {
     public User createUser(User newUser) {
         if (userRepository.findByUsername(newUser.getUsername()) != null){ throw new UserAlreadyExistsException(newUser.getUsername()); }
         newUser.setStatus(UserStatus.OFFLINE);
-        Calendar today = Calendar.getInstance();
-        newUser.setCreationDate(today.getTime());
+        //Calendar today = Calendar.getInstance();
+        newUser.setCreationDate(Long.toString(System.currentTimeMillis()));
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
 
-    public User getUser(String username) {
-        User temp = this.userRepository.findByUsername(username);
+    public User getUser(String id) {
+        User temp = this.userRepository.findById(Long.parseLong(id)).orElse(null);
         if (temp == null) throw new UserNotFoundException("User not found!");
         return temp;
     }

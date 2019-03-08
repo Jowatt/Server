@@ -37,10 +37,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{username}")
-    User one(@PathVariable String username, @RequestParam() String token) {
+    @GetMapping("/users/{id}")
+    User one(@PathVariable String id, @RequestParam() String token) {
         if (service.validateToken(token)){
-            return service.getUser(username);
+            return service.getUser(id);
         }
         else {
             throw new AuthenticationException("token invalid");
