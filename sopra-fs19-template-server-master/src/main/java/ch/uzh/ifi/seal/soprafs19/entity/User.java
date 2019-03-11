@@ -5,6 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.springframework.boot.json.JsonParser;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,7 +49,7 @@ public class User implements Serializable {
 	private UserStatus status;
 
 	@Column(nullable = false)
-	private String creationDate;
+	private Date creationDate;
 
 	@Column(nullable = true)
 	private Date birthDay;
@@ -93,9 +98,9 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {this.password = password;}
 
-	public void setCreationDate(String creationDate) {this.creationDate = creationDate;}
+	public void setCreationDate(Date creationDate) {this.creationDate = creationDate;}
 
-	public String getCreationDate() {return creationDate; }
+	public Date getCreationDate() {return creationDate; }
 
 	public Date getBirthDay(){ return birthDay; }
 
