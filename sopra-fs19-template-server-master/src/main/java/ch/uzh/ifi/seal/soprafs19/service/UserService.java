@@ -3,7 +3,7 @@ package ch.uzh.ifi.seal.soprafs19.service;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.exceptions.AuthenticationException;
-import ch.uzh.ifi.seal.soprafs19.exceptions.UserAlreadyExistsException;
+import ch.uzh.ifi.seal.soprafs19.exceptions.ConflictException;
 import ch.uzh.ifi.seal.soprafs19.exceptions.UserNotFoundException;
 import ch.uzh.ifi.seal.soprafs19.exceptions.PasswordNotValidException;
 
@@ -34,19 +34,28 @@ public class UserService {
     }
 
     public User getUser(String username){
-        return this.userRepository.findByUsername(username);
+        User user = this.userRepository.findByUsername(username);
+
+        return user;
     }
 
     public User getUserByToken(String token){
-        return this.userRepository.findByToken(token);
+        User user = this.userRepository.findByToken(token);
+        if (user == null){
+            throw new  UserNotFoundException("There was no user found with this token!");
+        }
+        return user;
     }
 
-    public User getUserById(Long id){
+    public User getUserById(Long id) {
         Optional<User> user = this.userRepository.findById(id);
-       // if (user.isPresent()) {
+        if (user.isPresent()) {
             return user.get();
-        //}
-        //return null;
+        }
+        else{
+            throw new UserNotFoundException(String.format("User with id: %s was not found!", id.toString()));
+
+        }
     }
 
     public Iterable<User> getUsers() {
@@ -55,7 +64,7 @@ public class UserService {
 
     public User loginUser(String username, String password) {
         User temp = this.userRepository.findByUsername(username);
-        if (temp == null) throw new UserNotFoundException(username);
+        if (temp == null) throw new UserNotFoundException(String.format("There is no user with the username: %s", username));
         if (temp.getPassword().equals(password)) {
             temp.setStatus(UserStatus.ONLINE);
             temp.setToken(UUID.randomUUID().toString());
@@ -78,7 +87,9 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-        if (userRepository.findByUsername(newUser.getUsername()) != null){ throw new UserAlreadyExistsException(newUser.getUsername()); }
+        if (userRepository.findByUsername(newUser.getUsername()) != null){
+            throw new ConflictException(String.format("There is already a account with this username: %s", newUser.getUsername()));
+        }
         newUser.setStatus(UserStatus.OFFLINE);
         newUser.setCreationDate(new Date());
         userRepository.save(newUser);
