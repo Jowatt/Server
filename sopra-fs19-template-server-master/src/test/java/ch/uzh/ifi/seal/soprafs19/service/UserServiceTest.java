@@ -6,6 +6,7 @@ import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
 import org.junit.Assert;
+import org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,17 @@ public class UserServiceTest {
         //Assert.assertNotNull(createdUser.getToken());
         Assert.assertEquals(createdUser.getStatus(),UserStatus.OFFLINE);
         //Assert.assertEquals(createdUser, userRepository.findByToken(createdUser.getToken()));
+    }
+
+    @Test
+    public void updateUser() {
+        User testUser = new User();
+        testUser.setName("testName");
+        testUser.setUsername("testUsername");
+        testUser.setPassword("testPassword");
+
+        User createdUser = userService.createUser(testUser);
+
+        Assert.assertEquals();
     }
 }

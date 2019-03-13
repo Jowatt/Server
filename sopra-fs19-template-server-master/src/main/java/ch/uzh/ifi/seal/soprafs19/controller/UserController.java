@@ -7,7 +7,11 @@ import ch.uzh.ifi.seal.soprafs19.exceptions.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @RestController
 public class UserController {
@@ -54,13 +58,16 @@ public class UserController {
     ResponseEntity updateUser(@RequestBody User newUser, @PathVariable long id, @RequestParam String token) {
         User user = service.getUserById(id);
         User tokenCheck = service.getUserByToken(token);
-        if (user == null){
-            throw new UserNotFoundException("user with userId: "+ id + " was not found");
-        } else if (!user.getToken().equals(tokenCheck.getToken())) {
+        if (!user.getToken().equals(tokenCheck.getToken())) {
             throw new AuthenticationException("Invalid token " + token);
         }
-        this.service.updateUser(user, newUser);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (service.getUser(newUser.getUsername()) != null){
+            throw new ConflictException(String.format("There is already a account with this username: %s", newUser.getUsername()));
+
+        }else {
+            this.service.updateUser(user, newUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @PostMapping("/users/login")
@@ -79,8 +86,11 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    User createUser(@RequestBody User newUser) {
-        return this.service.createUser(newUser);
+    @ResponseStatus(HttpStatus.CREATED)
+    String createUser(@RequestBody User newUser, HttpServletRequest request) throws UnknownHostException {
+        User local = this.service.createUser(newUser);
+        String host = InetAddress.getLocalHost().getHostAddress();
+        return String.format("http://%s:%s/users/%s", host, request.getLocalPort(), local.getId());
     }
 }
 
