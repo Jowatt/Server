@@ -38,7 +38,12 @@ public class UserController {
     User one(@PathVariable Long id, @RequestParam() String token) {
         System.out.print(service.validateToken(token));
         if (service.validateToken(token)){
-            return service.getUserById(id);
+            User other = service.getUserById(id);
+            if (other == null) {
+                throw new UserNotFoundException("user with userId: "+ id + " was not found");
+            }
+            return other;
+            //return service.getUserById(id);
         }
         else {
             throw new AuthenticationException("token invalid");
