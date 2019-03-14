@@ -106,7 +106,7 @@ public class UserService {
         if (local == null || !local.equals(user)) {
             throw new AuthenticationException("Invalid token!");
         }
-        if (this.getUser(newUser.getUsername()) != null && newUser.getUsername().equals(user.getUsername())) {
+        if (this.getUser(newUser.getUsername()) != null) {
             throw new ConflictException(String.format("There is already a account with this username: %s", newUser.getUsername()));
         } else {
             if (newUser.getUsername() != null) {
