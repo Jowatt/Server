@@ -51,7 +51,7 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private Date creationDate;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private Date birthDay;
 
 	public Long getId() {

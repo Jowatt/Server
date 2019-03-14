@@ -22,7 +22,7 @@ public class UserController {
         this.service = service;
     }
 
-    //FOR DEBUGGING PURPOSES
+    //FOR DEBUGGING
     @GetMapping("/debug/users")
     Iterable<User> all() {
         return service.getUsers();
@@ -40,14 +40,12 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     User one(@PathVariable Long id, @RequestParam() String token) {
-        System.out.print(service.validateToken(token));
         if (service.validateToken(token)){
             User other = service.getUserById(id);
             if (other == null) {
                 throw new UserNotFoundException("user with userId: "+ id + " was not found");
             }
             return other;
-            //return service.getUserById(id);
         }
         else {
             throw new AuthenticationException("token invalid");
@@ -57,17 +55,9 @@ public class UserController {
     @PutMapping("/users/{id}")
     ResponseEntity updateUser(@RequestBody User newUser, @PathVariable long id, @RequestParam String token) {
         User user = service.getUserById(id);
-        User tokenCheck = service.getUserByToken(token);
-        if (!user.getToken().equals(tokenCheck.getToken())) {
-            throw new AuthenticationException("Invalid token " + token);
-        }
-        if (service.getUser(newUser.getUsername()) != null){
-            throw new ConflictException(String.format("There is already a account with this username: %s", newUser.getUsername()));
+        this.service.updateUser(user, newUser, token);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-        }else {
-            this.service.updateUser(user, newUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
     }
 
     @PostMapping("/users/login")

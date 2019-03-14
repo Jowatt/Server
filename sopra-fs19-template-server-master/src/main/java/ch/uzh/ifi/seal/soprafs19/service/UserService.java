@@ -101,13 +101,21 @@ public class UserService {
         return this.userRepository.findByToken(token) != null;
     }
 
-    public void updateUser(User user, User newUser) {
-        if (newUser.getUsername() != null) {
-            user.setUsername(newUser.getUsername());
+    public void updateUser(User user, User newUser, String token) {
+        User local = this.userRepository.findByToken(token);
+        if (local == null || !local.equals(user)) {
+            throw new AuthenticationException("Invalid token!");
         }
-        if (newUser.getBirthDay() != null){
-            user.setBirthDay(newUser.getBirthDay());
+        if (this.getUser(newUser.getUsername()) != null && newUser.getUsername().equals(user.getUsername())) {
+            throw new ConflictException(String.format("There is already a account with this username: %s", newUser.getUsername()));
+        } else {
+            if (newUser.getUsername() != null) {
+                user.setUsername(newUser.getUsername());
+            }
+            if (newUser.getBirthDay() != null) {
+                user.setBirthDay(newUser.getBirthDay());
+            }
+            userRepository.save(user);
         }
-        userRepository.save(user);
     }
 }
